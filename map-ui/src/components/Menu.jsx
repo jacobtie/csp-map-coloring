@@ -63,9 +63,10 @@ const Menu = ({
         onChange={e => setTempCountryName(e.target.value)}
         className="form-control"
         style={formElementStyle}
+        value={tempCountryName}
       >
-        <option value="america">America</option>
         <option value="australia">Australia</option>
+        <option value="america">America</option>
       </select>
       <button
         type="button"

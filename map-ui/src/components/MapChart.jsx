@@ -54,7 +54,7 @@ const MapChart = ({ country, forwardChecking, propogation, mrv, dc, lcv }) => {
     <>
       {!loading ? (
         <>
-          {country === 'america' && states.length === 57 ? (
+          {country === 'america' && states.length === 56 ? (
             <AmericaMap states={states} />
           ) : (
             country === 'australia' &&

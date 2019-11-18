@@ -6,7 +6,6 @@ California,Oregon,Nevada,Arizona
 Colorado,Wyoming,Nebraska,Kansas,Oklahoma,New Mexico,Arizona,Utah
 Connecticut,New York,Massachusetts,Rhode Island
 District of Columbia,Maryland,Virginia
-Maryland,Virginia,District of Columbia
 Delaware,Maryland,Pennsylvania,New Jersey
 Florida,Alabama,Georgia
 Georgia,Florida,Alabama,Tennessee,North Carolina,South Carolina
@@ -25,7 +24,7 @@ Michigan,Wisconsin,Indiana,Ohio
 Minnesota,Wisconsin,Iowa,South Dakota,North Dakota
 Missouri,Iowa,Illinois,Kentucky,Tennessee,Arkansas,Oklahoma,Kansas,Nebraska
 Mississippi,Louisiana,Arkansas,Tennessee,Alabama
-Montana,North Dakota,South Dakota,Wyoming,ID
+Montana,North Dakota,South Dakota,Wyoming,Indiana
 North Carolina,Virginia,Tennessee,Georgia,South Carolina
 North Dakota,Minnesota,South Dakota,Montana
 Nebraska,South Dakota,Iowa,Missouri,Kansas,Colorado,Wyoming
@@ -42,14 +41,14 @@ Rhode Island,Connecticut,Massachusetts
 South Carolina,Georgia,North Carolina
 South Dakota,North Dakota,Minnesota,Iowa,Nebraska,Wyoming,Montana
 Tennessee,Kentucky,Virginia,North Carolina,Georgia,Alabama,Mississippi,Arkansas,Missouri
-Texas,New Mexico,Oklahoma,Arkansas,LA
+Texas,New Mexico,Oklahoma,Arkansas,Louisiana
 Utah,Idaho,Wyoming,Colorado,New Mexico,Arizona,Nevada
 Virginia,North Carolina,Tennessee,Kentucky,West Virginia,Maryland,District of Columbia
 Vermont,New York,New Hampshire,Massachusetts
 Washington,Idaho,Oregon
 Wisconsin,Michigan,Minnesota,Iowa,Illinois
 West Virginia,Ohio,Pennsylvania,Maryland,Virginia,Kentucky
-Wyoming,Montana,South Dakota,Nebraska,Colorado,Utah,ID
+Wyoming,Montana,South Dakota,Nebraska,Colorado,Utah,Indiana
 American Samoa
 Guam
 Commonwealth of the Northern Mariana Islands

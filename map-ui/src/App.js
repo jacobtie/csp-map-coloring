@@ -3,7 +3,7 @@ import MapChart from './components/MapChart';
 import Menu from './components/Menu';
 
 function App() {
-  const [countryName, setCountryName] = useState('america');
+  const [countryName, setCountryName] = useState('australia');
   const [forwardChecking, setForwardChecking] = useState(false);
   const [propogation, setPropogation] = useState(false);
   const [mrv, setMRV] = useState(false);

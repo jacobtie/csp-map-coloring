@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { select, geoPath, geoMercator } from 'd3';
 import { getAustraliaGeo } from '../services/StatesService';
 
+// Australia map code modified from https://bl.ocks.org/GerardoFurtado/02aa65e5522104cb692e
 const AustraliaMap = ({ states }) => {
   const mainRef = useRef(null);
 

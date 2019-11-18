@@ -11,8 +11,7 @@ namespace csp_api.Controllers
 	{
 		private MapService _mapService = new MapService();
 
-		[HttpGet]
-		[Route("/map/color")]
+		[HttpGet("/map/color")]
 		public async Task<IActionResult> GetMapColor([FromQuery] FillStatesAPIInput inputModel)
 		{
 			if (inputModel.Colors is null)
@@ -26,6 +25,20 @@ namespace csp_api.Controllers
 			}
 
 			if (!inputModel.ForwardChecking && inputModel.Propogation)
+			{
+				return BadRequest();
+			}
+
+			var validHeuristic = (inputModel.MRV, inputModel.DC, inputModel.LCV) switch
+			{
+				(false, false, false) => true,
+				(true, false, false) => true,
+				(false, true, false) => true,
+				(false, false, true) => true,
+				(_, _, _) => false,
+			};
+
+			if (!validHeuristic)
 			{
 				return BadRequest();
 			}
