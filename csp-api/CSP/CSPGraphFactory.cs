@@ -29,6 +29,24 @@ namespace csp_api.CSP
 
 			if (inputModel.ForwardChecking)
 			{
+				Func<Vertex, byte, Dictionary<string, byte>, CSPGraph, bool> propogate;
+
+				if (inputModel.Propogation)
+				{
+					propogate = (unassigned, value, assignments, cspGraph) =>
+					{
+						// AC-3 Algorithm
+						return true;
+					};
+				}
+				else
+				{
+					propogate = (unassigned, value, assignments, cspGraph) =>
+					{
+						return true;
+					};
+				}
+
 				inference = (unassigned, value, assignments, cspGraph) =>
 				{
 					var neighbors = cspGraph.Edges.Where(edge => edge.EndVertices.start == unassigned
@@ -45,12 +63,9 @@ namespace csp_api.CSP
 						}
 					}
 
-					if (inputModel.Propogation)
-					{
-						// AC-3 Algorithm
-					}
+					var valid = propogate(unassigned, value, assignments, cspGraph);
 
-					return true;
+					return valid;
 				};
 			}
 
