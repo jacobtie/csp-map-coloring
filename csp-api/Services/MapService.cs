@@ -13,17 +13,9 @@ namespace csp_api.Services
 		public async Task<List<StateColors>> GetMapColors(FillStatesServiceInput inputModel)
 		{
 			var (nodes, constraints) = await _getConstraintsFromFile(inputModel.CountryName);
-			var chosenHeuristic = (inputModel.MRV, inputModel.DC, inputModel.LCV) switch
-			{
-				(false, false, false) => Heuristic.None,
-				(true, false, false) => Heuristic.MRV,
-				(false, true, false) => Heuristic.DC,
-				(false, false, true) => Heuristic.LCV,
-				(_, _, _) => throw new Exception("Bad heuristic combination"),
-			};
 
 			var cspGraph = CSPGraphFactory.BuildCSPGraph(
-				new BuildCSPGraphInput(nodes, inputModel.Colors, constraints, chosenHeuristic,
+				new BuildCSPGraphInput(nodes, inputModel.Colors, constraints, inputModel.MRV, inputModel.DC, inputModel.LCV,
 					inputModel.ForwardChecking, inputModel.Propogation));
 
 			var (success, results) = cspGraph.RunCSP();

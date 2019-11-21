@@ -30,13 +30,6 @@ const Menu = ({
     setTempForwardChecking(!tempForwardChecking);
   };
 
-  const handleHeuristicClick = (val, fn) => {
-    setTempMRV(false);
-    setTempDC(false);
-    setTempLCV(false);
-    fn(val);
-  };
-
   const handleRunButton = () => {
     setCountryName(tempCountryName);
     setForwardChecking(tempForwardChecking);
@@ -89,7 +82,7 @@ const Menu = ({
         type="button"
         style={formElementStyle}
         className={`btn ${tempMRV ? 'btn-success' : ''}`}
-        onClick={() => handleHeuristicClick(!tempMRV, setTempMRV)}
+        onClick={() => setTempMRV(!tempMRV)}
       >
         MRV
       </button>
@@ -97,7 +90,7 @@ const Menu = ({
         type="button"
         style={formElementStyle}
         className={`btn ${tempDC ? 'btn-success' : ''}`}
-        onClick={() => handleHeuristicClick(!tempDC, setTempDC)}
+        onClick={() => setTempDC(!tempDC)}
       >
         Degree Constraint
       </button>
@@ -105,7 +98,7 @@ const Menu = ({
         type="button"
         style={formElementStyle}
         className={`btn ${tempLCV ? 'btn-success' : ''}`}
-        onClick={() => handleHeuristicClick(!tempLCV, setTempLCV)}
+        onClick={() => setTempLCV(!tempLCV)}
       >
         LCV
       </button>

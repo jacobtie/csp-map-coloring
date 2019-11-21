@@ -29,20 +29,6 @@ namespace csp_api.Controllers
 				return BadRequest();
 			}
 
-			var validHeuristic = (inputModel.MRV, inputModel.DC, inputModel.LCV) switch
-			{
-				(false, false, false) => true,
-				(true, false, false) => true,
-				(false, true, false) => true,
-				(false, false, true) => true,
-				(_, _, _) => false,
-			};
-
-			if (!validHeuristic)
-			{
-				return BadRequest();
-			}
-
 			List<StateColors>? stateColors;
 			try
 			{

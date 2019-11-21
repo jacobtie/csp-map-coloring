@@ -29,19 +29,61 @@ namespace csp_api.CSP
 
 			if (inputModel.ForwardChecking)
 			{
-				Func<Vertex, byte, Dictionary<string, byte>, CSPGraph, bool> propogate;
+				Func<Dictionary<string, byte>, CSPGraph, bool> propogate;
 
 				if (inputModel.Propogation)
 				{
-					propogate = (unassigned, value, assignments, cspGraph) =>
+					propogate = (assignments, cspGraph) =>
 					{
 						// AC-3 Algorithm
+
+						var edgesQueue = new Queue<Edge>(cspGraph.Edges);
+
+						while (edgesQueue.Any())
+						{
+							var currentEdge = edgesQueue.Dequeue();
+
+							// Remove-Inconsistent-Values
+							var (vertexX, vertexY) = currentEdge.EndVertices;
+							if (assignments.ContainsKey(vertexX.Element) || vertexY.Domain.Count > 1)
+							{
+								continue;
+							}
+
+							var removed = false;
+							byte removedElement = 0;
+							foreach (var element in vertexX.Domain)
+							{
+								if (vertexY.Domain[0] == element)
+								{
+									removed = true;
+									removedElement = element;
+									break;
+								}
+							}
+
+							if (removed)
+							{
+								vertexX.Domain.Remove(removedElement);
+								if (!vertexX.Domain.Any())
+								{
+									return false;
+								}
+								var neighbors = cspGraph.Edges.Where(edge => edge.EndVertices.end == vertexX
+									&& !assignments.ContainsKey(edge.EndVertices.start.Element));
+								foreach (var neighbor in neighbors)
+								{
+									edgesQueue.Enqueue(neighbor);
+								}
+							}
+						}
+
 						return true;
 					};
 				}
 				else
 				{
-					propogate = (unassigned, value, assignments, cspGraph) =>
+					propogate = (assignments, cspGraph) =>
 					{
 						return true;
 					};
@@ -63,7 +105,7 @@ namespace csp_api.CSP
 						}
 					}
 
-					var valid = propogate(unassigned, value, assignments, cspGraph);
+					var valid = propogate(assignments, cspGraph);
 
 					return valid;
 				};
