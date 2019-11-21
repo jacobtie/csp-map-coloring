@@ -11,9 +11,9 @@ namespace csp_api.Models
 		public bool DC { get; set; }
 		public bool LCV { get; set; }
 		public bool ForwardChecking { get; set; }
-		public bool Propogation { get; set; }
+		public bool Propagation { get; set; }
 
-		public BuildCSPGraphInput(List<string> states, List<string> colors, Dictionary<string, List<string>> constraints, bool mrv, bool dc, bool lcv, bool forwardChecking, bool propogation)
+		public BuildCSPGraphInput(List<string> states, List<string> colors, Dictionary<string, List<string>> constraints, bool mrv, bool dc, bool lcv, bool forwardChecking, bool propagation)
 		{
 			this.States = states;
 			this.Colors = colors;
@@ -22,7 +22,7 @@ namespace csp_api.Models
 			this.DC = dc;
 			this.LCV = lcv;
 			this.ForwardChecking = forwardChecking;
-			this.Propogation = propogation;
+			this.Propagation = propagation;
 		}
 	}
 }

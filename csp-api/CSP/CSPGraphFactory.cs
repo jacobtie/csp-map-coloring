@@ -31,7 +31,7 @@ namespace csp_api.CSP
 			{
 				Func<Dictionary<string, byte>, CSPGraph, bool> propogate;
 
-				if (inputModel.Propogation)
+				if (inputModel.Propagation)
 				{
 					propogate = (assignments, cspGraph) =>
 					{

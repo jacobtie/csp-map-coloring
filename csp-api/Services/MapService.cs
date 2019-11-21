@@ -10,24 +10,26 @@ namespace csp_api.Services
 {
 	public class MapService
 	{
-		public async Task<List<StateColors>> GetMapColors(FillStatesServiceInput inputModel)
+		public async Task<MapColoringResult> GetMapColors(FillStatesServiceInput inputModel)
 		{
 			var (nodes, constraints) = await _getConstraintsFromFile(inputModel.CountryName);
 
 			var cspGraph = CSPGraphFactory.BuildCSPGraph(
 				new BuildCSPGraphInput(nodes, inputModel.Colors, constraints, inputModel.MRV, inputModel.DC, inputModel.LCV,
-					inputModel.ForwardChecking, inputModel.Propogation));
+					inputModel.ForwardChecking, inputModel.Propagation));
 
-			var (success, results) = cspGraph.RunCSP();
+			var results = cspGraph.RunCSP();
 
-			if (!success)
+			if (!results.Success)
 			{
 				throw new Exception("Solution not found!");
 			}
 
-			var stateColors = results.Select(result => new StateColors(result.Key, inputModel.Colors[result.Value])).ToList();
+			var stateColors = results.Assignments.Select(result => new StateColors(result.Key, inputModel.Colors[result.Value])).ToList();
 
-			return stateColors;
+			var mapColoringResults = new MapColoringResult(stateColors, results.NumBacktracks, results.ElapsedTime);
+
+			return mapColoringResults;
 		}
 
 		private async Task<(List<string> nodes, Dictionary<string, List<string>> constraints)> _getConstraintsFromFile(string country)

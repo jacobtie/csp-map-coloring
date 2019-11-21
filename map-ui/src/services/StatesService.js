@@ -16,13 +16,13 @@ export const getStates = async (
   country,
   colors,
   forwardChecking,
-  propogation,
+  propagation,
   mrv,
   dc,
   lcv
 ) => {
   const res = await axios.get(
-    `${baseURL}map/color?countryName=${country}&colors=${colors}&forwardChecking=${forwardChecking}&propogation=${propogation}&mrv=${mrv}&dc=${dc}&lcv=${lcv}`
+    `${baseURL}map/color?countryName=${country}&colors=${colors}&forwardChecking=${forwardChecking}&propagation=${propagation}&mrv=${mrv}&dc=${dc}&lcv=${lcv}`
   );
 
   return res.data;

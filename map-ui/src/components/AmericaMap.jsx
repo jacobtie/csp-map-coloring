@@ -5,7 +5,7 @@ const AmericaMap = ({ states }) => {
   const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
   return (
-    <ComposableMap projection={'geoAlbersUsa'} width={1350}>
+    <ComposableMap projection={'geoAlbersUsa'} width={1500}>
       <Geographies geography={geoUrl}>
         {({ geographies }) =>
           geographies.map(geo => {

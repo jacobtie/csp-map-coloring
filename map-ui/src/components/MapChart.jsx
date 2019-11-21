@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { BubbleLoader } from 'react-css-loaders';
 import AmericaMap from './AmericaMap';
 import AustraliaMap from './AustraliaMap';
 import { getStates } from '../services/StatesService';
 
-const MapChart = ({ country, forwardChecking, propogation, mrv, dc, lcv }) => {
+const MapChart = ({ country, forwardChecking, propagation, mrv, dc, lcv }) => {
   const [states, setStates] = useState([]);
+  const [numBacktracks, setNumBacktracks] = useState(-1);
+  const [elapsedTime, setElapsedTime] = useState(-1.0);
   const [loading, setLoading] = useState(false);
 
   const env = 'dev';
@@ -29,18 +32,19 @@ const MapChart = ({ country, forwardChecking, propogation, mrv, dc, lcv }) => {
         ? 'red;green;blue'
         : '';
     (async () => {
-      const statesJSON = await getStates(
+      const res = await getStates(
         country,
         colors,
         forwardChecking,
-        propogation,
+        propagation,
         mrv,
         dc,
         lcv
       );
       if (!cancelled) {
-        const states = statesJSON;
-        setStates(states);
+        setStates(res.assignments);
+        setNumBacktracks(res.numBacktracks);
+        setElapsedTime(res.elapsedTime / 1000);
         setLoading(false);
       }
     })();
@@ -48,12 +52,16 @@ const MapChart = ({ country, forwardChecking, propogation, mrv, dc, lcv }) => {
     return () => {
       cancelled = true;
     };
-  }, [baseURL, country, forwardChecking, propogation, mrv, dc, lcv]);
+  }, [baseURL, country, forwardChecking, propagation, mrv, dc, lcv]);
 
   return (
     <>
       {!loading ? (
         <>
+          <div style={{ margin: '.5% 10.5%' }}>
+            <div>Elapsed Time: {elapsedTime} seconds</div>
+            <div>Number of Backtracks: {numBacktracks}</div>
+          </div>
           {country === 'america' && states.length === 56 ? (
             <AmericaMap states={states} />
           ) : (
@@ -62,7 +70,16 @@ const MapChart = ({ country, forwardChecking, propogation, mrv, dc, lcv }) => {
           )}
         </>
       ) : (
-        <h1>LOADING</h1>
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <BubbleLoader />
+        </div>
       )}
     </>
   );

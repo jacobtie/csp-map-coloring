@@ -5,8 +5,8 @@ const Menu = ({
   setCountryName,
   forwardChecking,
   setForwardChecking,
-  propogation,
-  setPropogation,
+  propagation,
+  setPropagation,
   mrv,
   setMRV,
   dc,
@@ -18,14 +18,14 @@ const Menu = ({
   const [tempForwardChecking, setTempForwardChecking] = useState(
     forwardChecking
   );
-  const [tempPropogation, setTempPropogation] = useState(propogation);
+  const [tempPropagation, setTempPropagation] = useState(propagation);
   const [tempMRV, setTempMRV] = useState(mrv);
   const [tempDC, setTempDC] = useState(dc);
   const [tempLCV, setTempLCV] = useState(lcv);
 
   const handleForwardCheckingClick = () => {
     if (tempForwardChecking) {
-      setTempPropogation(false);
+      setTempPropagation(false);
     }
     setTempForwardChecking(!tempForwardChecking);
   };
@@ -33,7 +33,7 @@ const Menu = ({
   const handleRunButton = () => {
     setCountryName(tempCountryName);
     setForwardChecking(tempForwardChecking);
-    setPropogation(tempPropogation);
+    setPropagation(tempPropagation);
     setMRV(tempMRV);
     setDC(tempDC);
     setLCV(tempLCV);
@@ -72,11 +72,11 @@ const Menu = ({
       <button
         type="button"
         style={formElementStyle}
-        className={`btn ${tempPropogation ? 'btn-success' : ''}`}
-        onClick={() => setTempPropogation(!tempPropogation)}
+        className={`btn ${tempPropagation ? 'btn-success' : ''}`}
+        onClick={() => setTempPropagation(!tempPropagation)}
         disabled={!tempForwardChecking}
       >
-        Propogation
+        Propagation
       </button>
       <button
         type="button"

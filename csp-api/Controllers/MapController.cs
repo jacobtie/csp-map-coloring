@@ -24,12 +24,12 @@ namespace csp_api.Controllers
 				return BadRequest();
 			}
 
-			if (!inputModel.ForwardChecking && inputModel.Propogation)
+			if (!inputModel.ForwardChecking && inputModel.Propagation)
 			{
 				return BadRequest();
 			}
 
-			List<StateColors>? stateColors;
+			MapColoringResult? stateColors;
 			try
 			{
 				stateColors = await _mapService.GetMapColors(new FillStatesServiceInput(inputModel));

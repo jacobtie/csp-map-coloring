@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace csp_api.CSP
 {
@@ -51,17 +52,25 @@ namespace csp_api.CSP
 			}
 		}
 
-		public (bool, Dictionary<string, byte>) RunCSP()
+		public CSPResult RunCSP()
 		{
 			var success = false;
 			var assignments = new Dictionary<string, byte>();
+			var numBacktracks = 0;
+			var stopwatch = new Stopwatch();
 
-			success = _cspHelper(assignments);
+			stopwatch.Start();
+			success = _cspHelper(assignments, ref numBacktracks);
+			stopwatch.Stop();
 
-			return (success, assignments);
+			var elapsedTime = stopwatch.ElapsedTicks / 10000;
+
+			var results = new CSPResult(success, assignments, numBacktracks, elapsedTime);
+
+			return results;
 		}
 
-		private bool _cspHelper(Dictionary<string, byte> assignments)
+		private bool _cspHelper(Dictionary<string, byte> assignments, ref int numBacktracks)
 		{
 			if (assignments.Count == this.Vertices.Count)
 			{
@@ -94,14 +103,14 @@ namespace csp_api.CSP
 					var inferenceSuccess = _inference(unassigned, value, assignments, this);
 					if (!inferenceSuccess)
 					{
-						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned);
+						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
 						continue;
 					}
-					var success = _cspHelper(assignments);
+					var success = _cspHelper(assignments, ref numBacktracks);
 
 					if (!success)
 					{
-						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned);
+						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
 					}
 					else
 					{
@@ -113,10 +122,10 @@ namespace csp_api.CSP
 					_assign(assignments, unassigned.Element, value);
 					if (_isConsistent(unassigned, value, assignments))
 					{
-						var success = _cspHelper(assignments);
+						var success = _cspHelper(assignments, ref numBacktracks);
 						if (!success)
 						{
-							_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned);
+							_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
 						}
 						else
 						{
@@ -125,7 +134,7 @@ namespace csp_api.CSP
 					}
 					else
 					{
-						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned);
+						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
 					}
 				}
 
@@ -148,8 +157,10 @@ namespace csp_api.CSP
 			assignments.Add(element, value);
 		}
 
-		private void _backtrack(Dictionary<string, byte> assignments, string element, List<Vertex>? previousVertices, List<Edge>? previousEdges, ref Vertex unassigned)
+		private void _backtrack(Dictionary<string, byte> assignments, string element,
+			List<Vertex>? previousVertices, List<Edge>? previousEdges, ref Vertex unassigned, ref int numBacktracks)
 		{
+			numBacktracks++;
 			assignments.Remove(element);
 
 			if (previousVertices != null && previousEdges != null)

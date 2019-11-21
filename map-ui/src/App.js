@@ -5,7 +5,7 @@ import Menu from './components/Menu';
 function App() {
   const [countryName, setCountryName] = useState('australia');
   const [forwardChecking, setForwardChecking] = useState(false);
-  const [propogation, setPropogation] = useState(false);
+  const [propagation, setPropagation] = useState(false);
   const [mrv, setMRV] = useState(false);
   const [dc, setDC] = useState(false);
   const [lcv, setLCV] = useState(false);
@@ -17,8 +17,8 @@ function App() {
         setCountryName={setCountryName}
         forwardChecking={forwardChecking}
         setForwardChecking={setForwardChecking}
-        propogation={propogation}
-        setPropogation={setPropogation}
+        propagation={propagation}
+        setPropagation={setPropagation}
         mrv={mrv}
         setMRV={setMRV}
         dc={dc}
@@ -29,7 +29,7 @@ function App() {
       <MapChart
         country={countryName}
         forwardChecking={forwardChecking}
-        propogation={propogation}
+        propagation={propagation}
         mrv={mrv}
         dc={dc}
         lcv={lcv}

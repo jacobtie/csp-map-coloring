@@ -8,7 +8,7 @@ namespace csp_api.Models
 		public string CountryName { get; set; }
 		public List<string> Colors { get; set; }
 		public bool ForwardChecking { get; set; }
-		public bool Propogation { get; set; }
+		public bool Propagation { get; set; }
 		public bool MRV { get; set; }
 		public bool DC { get; set; }
 		public bool LCV { get; set; }
@@ -26,7 +26,7 @@ namespace csp_api.Models
 			this.CountryName = inputModel.CountryName;
 			this.Colors = new List<string>(inputModel.Colors.Split(';'));
 			this.ForwardChecking = inputModel.ForwardChecking;
-			this.Propogation = inputModel.Propogation;
+			this.Propagation = inputModel.Propagation;
 			this.MRV = inputModel.MRV;
 			this.DC = inputModel.DC;
 			this.LCV = inputModel.LCV;
