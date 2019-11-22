@@ -24,7 +24,7 @@ Michigan,Wisconsin,Indiana,Ohio
 Minnesota,Wisconsin,Iowa,South Dakota,North Dakota
 Missouri,Iowa,Illinois,Kentucky,Tennessee,Arkansas,Oklahoma,Kansas,Nebraska
 Mississippi,Louisiana,Arkansas,Tennessee,Alabama
-Montana,North Dakota,South Dakota,Wyoming,Indiana
+Montana,North Dakota,South Dakota,Wyoming,Idaho
 North Carolina,Virginia,Tennessee,Georgia,South Carolina
 North Dakota,Minnesota,South Dakota,Montana
 Nebraska,South Dakota,Iowa,Missouri,Kansas,Colorado,Wyoming
@@ -48,7 +48,7 @@ Vermont,New York,New Hampshire,Massachusetts
 Washington,Idaho,Oregon
 Wisconsin,Michigan,Minnesota,Iowa,Illinois
 West Virginia,Ohio,Pennsylvania,Maryland,Virginia,Kentucky
-Wyoming,Montana,South Dakota,Nebraska,Colorado,Utah,Indiana
+Wyoming,Montana,South Dakota,Nebraska,Colorado,Utah,Idaho
 American Samoa
 Guam
 Commonwealth of the Northern Mariana Islands

@@ -9,21 +9,174 @@ namespace csp_api.CSP
 	{
 		public static CSPGraph BuildCSPGraph(BuildCSPGraphInput inputModel)
 		{
-			Func<Dictionary<string, byte>, CSPGraph, Vertex> selectUnassignedVariable = (assignments, cspGraph) =>
+			Func<Dictionary<string, byte>, CSPGraph, Vertex> selectUnassignedVariable;
+
+			if (inputModel.MRV)
 			{
-				var unassigned = cspGraph.Vertices.Find(vertex => !assignments.ContainsKey(vertex.Element));
-				if (unassigned == null)
+				selectUnassignedVariable = (assignments, cspGraph) =>
 				{
-					throw new Exception("Unassigned is not defined");
-				}
+					var unassigned = cspGraph.Vertices.Where(vertex => !assignments.ContainsKey(vertex.Element)).ToList();
 
-				return unassigned;
-			};
+					var minUnassigned = unassigned[0];
+					var minLegalValues = unassigned[0].Domain.Count;
 
-			Func<Vertex, Dictionary<string, byte>, CSPGraph, List<byte>> orderDomainValues = (unassigned, assignments, cspGraph) =>
+					foreach (var vertex in unassigned)
+					{
+						var takenValues = cspGraph.Edges.Where(edge => edge.EndVertices.start == vertex
+																&& assignments.ContainsKey(edge.EndVertices.end.Element))
+														.Select(edge => assignments[edge.EndVertices.end.Element])
+														.Where(assignment => vertex.Domain.Contains(assignment))
+														.Distinct().ToList();
+
+						var legalValues = vertex.Domain.Count - takenValues.Count;
+
+						if (legalValues < minLegalValues)
+						{
+							minUnassigned = vertex;
+							minLegalValues = legalValues;
+						}
+					}
+
+					return minUnassigned;
+				};
+			}
+			else if (inputModel.DC)
 			{
-				return unassigned.Domain;
-			};
+				selectUnassignedVariable = (assignments, cspGraph) =>
+				{
+					var unassigned = cspGraph.Vertices.Where(vertex => !assignments.ContainsKey(vertex.Element)).ToList();
+
+					var maxUnassigned = unassigned[0];
+					var maxEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == maxUnassigned);
+					foreach (var vertex in unassigned)
+					{
+						var numEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == vertex);
+						if (numEdges > maxEdges)
+						{
+							maxUnassigned = vertex;
+							maxEdges = numEdges;
+						}
+					}
+
+					return maxUnassigned;
+				};
+			}
+			else if (inputModel.MRV && inputModel.DC)
+			{
+				selectUnassignedVariable = (assignments, cspGraph) =>
+				{
+					var unassigned = cspGraph.Vertices.Where(vertex => !assignments.ContainsKey(vertex.Element)).ToList();
+
+					var minUnassigned = new List<Vertex>();
+					minUnassigned.Add(unassigned[0]);
+					var minLegalValues = unassigned[0].Domain.Count;
+
+					foreach (var vertex in unassigned)
+					{
+						var takenValues = cspGraph.Edges.Where(edge => edge.EndVertices.start == vertex
+																&& assignments.ContainsKey(edge.EndVertices.end.Element))
+														.Select(edge => assignments[edge.EndVertices.end.Element])
+														.Where(assignment => vertex.Domain.Contains(assignment))
+														.Distinct().ToList();
+
+						var legalValues = vertex.Domain.Count - takenValues.Count;
+
+						if (legalValues == minLegalValues)
+						{
+							minUnassigned.Add(vertex);
+						}
+						else if (legalValues < minLegalValues)
+						{
+							minUnassigned.Clear();
+							minUnassigned.Add(vertex);
+							minLegalValues = legalValues;
+						}
+					}
+
+					var maxUnassigned = minUnassigned[0];
+					if (minUnassigned.Count > 1)
+					{
+						var maxEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == maxUnassigned);
+						foreach (var vertex in minUnassigned)
+						{
+							var numEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == vertex);
+							if (numEdges > maxEdges)
+							{
+								maxUnassigned = vertex;
+								maxEdges = numEdges;
+							}
+						}
+					}
+
+					return maxUnassigned;
+				};
+			}
+			else
+			{
+				selectUnassignedVariable = (assignments, cspGraph) =>
+				{
+					var unassigned = cspGraph.Vertices.Find(vertex => !assignments.ContainsKey(vertex.Element));
+					if (unassigned == null)
+					{
+						throw new Exception("Unassigned is not defined");
+					}
+
+					return unassigned;
+				};
+			}
+
+			Func<Vertex, Dictionary<string, byte>, CSPGraph, List<byte>> orderDomainValues;
+
+			if (inputModel.LCV)
+			{
+				orderDomainValues = (unassigned, assignments, cspGraph) =>
+				{
+					var neighbors = cspGraph.Edges.Where(edge => edge.EndVertices.start == unassigned
+															&& !assignments.ContainsKey(edge.EndVertices.end.Element))
+												.Select(edge => edge.EndVertices.end).ToList();
+
+					var lcvHeuristics = new int[unassigned.Domain.Count];
+
+					for (int i = 0; i < unassigned.Domain.Count; i++)
+					{
+						lcvHeuristics[i] = 0;
+						foreach (var neighbor in neighbors)
+						{
+							if (neighbor.Domain.Contains(unassigned.Domain[i]))
+							{
+								++lcvHeuristics[i];
+							}
+						}
+					}
+
+					var sortedDomain = new List<byte>(unassigned.Domain);
+					for (int i = 0; i < lcvHeuristics.Length - 1; i++)
+					{
+						for (int j = 0; j < lcvHeuristics.Length - i - 1; j++)
+						{
+							if (lcvHeuristics[j] > lcvHeuristics[j + 1])
+							{
+								byte sdTemp = sortedDomain[j];
+								sortedDomain[j] = sortedDomain[j + 1];
+								sortedDomain[j + 1] = sdTemp;
+
+								int lcvHTemp = lcvHeuristics[j];
+								lcvHeuristics[j] = lcvHeuristics[j + 1];
+								lcvHeuristics[j + 1] = lcvHTemp;
+							}
+						}
+					}
+
+					return sortedDomain;
+				};
+			}
+			else
+			{
+				orderDomainValues = (unassigned, assignments, cspGraph) =>
+				{
+					return unassigned.Domain;
+				};
+			}
 
 			Func<Vertex, byte, Dictionary<string, byte>, CSPGraph, bool>? inference = null;
 

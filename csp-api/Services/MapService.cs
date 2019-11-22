@@ -12,7 +12,10 @@ namespace csp_api.Services
 	{
 		public async Task<MapColoringResult> GetMapColors(FillStatesServiceInput inputModel)
 		{
+			var rand = new Random();
 			var (nodes, constraints) = await _getConstraintsFromFile(inputModel.CountryName);
+
+			// nodes = nodes.OrderBy(node => rand.Next()).ToList();
 
 			var cspGraph = CSPGraphFactory.BuildCSPGraph(
 				new BuildCSPGraphInput(nodes, inputModel.Colors, constraints, inputModel.MRV, inputModel.DC, inputModel.LCV,
