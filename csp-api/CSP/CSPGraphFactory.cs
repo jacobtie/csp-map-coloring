@@ -22,8 +22,7 @@ namespace csp_api.CSP
 
 					foreach (var vertex in unassigned)
 					{
-						var takenValues = cspGraph.Edges.Where(edge => edge.EndVertices.start == vertex
-																&& assignments.ContainsKey(edge.EndVertices.end.Element))
+						var takenValues = vertex.Edges.Where(edge => assignments.ContainsKey(edge.EndVertices.end.Element))
 														.Select(edge => assignments[edge.EndVertices.end.Element])
 														.Where(assignment => vertex.Domain.Contains(assignment))
 														.Distinct().ToList();
@@ -47,14 +46,14 @@ namespace csp_api.CSP
 					var unassigned = cspGraph.Vertices.Where(vertex => !assignments.ContainsKey(vertex.Element)).ToList();
 
 					var maxUnassigned = unassigned[0];
-					var maxEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == maxUnassigned);
+					var maxEdges = maxUnassigned.Edges.Count;
+
 					foreach (var vertex in unassigned)
 					{
-						var numEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == vertex);
-						if (numEdges > maxEdges)
+						if (vertex.Edges.Count > maxEdges)
 						{
 							maxUnassigned = vertex;
-							maxEdges = numEdges;
+							maxEdges = vertex.Edges.Count;
 						}
 					}
 
@@ -73,8 +72,7 @@ namespace csp_api.CSP
 
 					foreach (var vertex in unassigned)
 					{
-						var takenValues = cspGraph.Edges.Where(edge => edge.EndVertices.start == vertex
-																&& assignments.ContainsKey(edge.EndVertices.end.Element))
+						var takenValues = vertex.Edges.Where(edge => assignments.ContainsKey(edge.EndVertices.end.Element))
 														.Select(edge => assignments[edge.EndVertices.end.Element])
 														.Where(assignment => vertex.Domain.Contains(assignment))
 														.Distinct().ToList();
@@ -94,16 +92,17 @@ namespace csp_api.CSP
 					}
 
 					var maxUnassigned = minUnassigned[0];
+
 					if (minUnassigned.Count > 1)
 					{
-						var maxEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == maxUnassigned);
+						var maxEdges = maxUnassigned.Edges.Count;
+
 						foreach (var vertex in minUnassigned)
 						{
-							var numEdges = cspGraph.Edges.Count(edge => edge.EndVertices.start == vertex);
-							if (numEdges > maxEdges)
+							if (vertex.Edges.Count > maxEdges)
 							{
 								maxUnassigned = vertex;
-								maxEdges = numEdges;
+								maxEdges = vertex.Edges.Count;
 							}
 						}
 					}
@@ -131,8 +130,7 @@ namespace csp_api.CSP
 			{
 				orderDomainValues = (unassigned, assignments, cspGraph) =>
 				{
-					var neighbors = cspGraph.Edges.Where(edge => edge.EndVertices.start == unassigned
-															&& !assignments.ContainsKey(edge.EndVertices.end.Element))
+					var neighbors = unassigned.Edges.Where(edge => !assignments.ContainsKey(edge.EndVertices.end.Element))
 												.Select(edge => edge.EndVertices.end).ToList();
 
 					var lcvHeuristics = new int[unassigned.Domain.Count];
@@ -198,6 +196,7 @@ namespace csp_api.CSP
 
 							// Remove-Inconsistent-Values
 							var (vertexX, vertexY) = currentEdge.EndVertices;
+
 							if (assignments.ContainsKey(vertexX.Element) || vertexY.Domain.Count > 1)
 							{
 								continue;
@@ -205,6 +204,7 @@ namespace csp_api.CSP
 
 							var removed = false;
 							byte removedElement = 0;
+
 							foreach (var element in vertexX.Domain)
 							{
 								if (vertexY.Domain[0] == element)
@@ -218,15 +218,17 @@ namespace csp_api.CSP
 							if (removed)
 							{
 								vertexX.Domain.Remove(removedElement);
+
 								if (!vertexX.Domain.Any())
 								{
 									return false;
 								}
-								var neighbors = cspGraph.Edges.Where(edge => edge.EndVertices.end == vertexX
-									&& !assignments.ContainsKey(edge.EndVertices.start.Element));
+
+								var neighbors = vertexX.Edges.Where(edge => !assignments.ContainsKey(edge.EndVertices.end.Element));
+
 								foreach (var neighbor in neighbors)
 								{
-									edgesQueue.Enqueue(neighbor);
+									edgesQueue.Enqueue(new Edge(neighbor.EndVertices.end, neighbor.EndVertices.start));
 								}
 							}
 						}
@@ -244,8 +246,7 @@ namespace csp_api.CSP
 
 				inference = (unassigned, value, assignments, cspGraph) =>
 				{
-					var neighbors = cspGraph.Edges.Where(edge => edge.EndVertices.start == unassigned
-													&& !assignments.ContainsKey(edge.EndVertices.end.Element))
+					var neighbors = unassigned.Edges.Where(edge => !assignments.ContainsKey(edge.EndVertices.end.Element))
 												.Select(edge => edge.EndVertices.end).ToList();
 
 					foreach (var neighbor in neighbors)

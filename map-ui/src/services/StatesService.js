@@ -1,13 +1,17 @@
 import axios from 'axios';
 
-const env = 'dev';
+let env = 'prod';
+
+if (window.location.hostname === 'localhost') {
+  env = 'dev';
+}
 
 let baseURL;
 
 if (env === 'dev') {
   baseURL = 'http://localhost:5000/';
 } else if (env === 'prod') {
-  baseURL = '';
+  baseURL = 'https://csp-krevat-reynolds-api.herokuapp.com/';
 } else {
   baseURL = '';
 }

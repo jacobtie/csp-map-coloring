@@ -19,7 +19,8 @@ namespace csp_api.CSP
 			Func<Vertex, Dictionary<string, byte>, CSPGraph, List<byte>> orderDomainValues,
 			Func<Vertex, byte, Dictionary<string, byte>, CSPGraph, bool>? inference)
 		{
-			this.Vertices = nodes.Select(node => new Vertex(node, Enumerable.Range(0, domain.Count).Select(num => (byte)num).ToList())).ToList();
+			this.Vertices = nodes.Select(node => new Vertex(node, Enumerable.Range(0, domain.Count).
+							Select(num => (byte)num).ToList())).ToList();
 			this.Edges = new List<Edge>();
 
 			_initEdges(constraints);
@@ -31,23 +32,21 @@ namespace csp_api.CSP
 
 		private void _initEdges(Dictionary<string, List<string>> constraints)
 		{
-			foreach (var (node, neighbors) in constraints)
+			foreach (var v in Vertices)
 			{
-				var nodeVertex = this.Vertices.Find(vertex => vertex.Element == node);
-				if (nodeVertex is null)
+				foreach (var neighbor in constraints[v.Element])
 				{
-					throw new Exception("Node vertex not found, this should not happen");
-				}
+					var nv = this.Vertices.Find(vert => vert.Element == neighbor);
 
-				foreach (var neighbor in neighbors)
-				{
-					var neighborVertex = this.Vertices.Find(vertex => vertex.Element == neighbor);
-					if (neighborVertex is null)
+					if (nv == null)
 					{
-						throw new Exception("Neighbor vertex not found, this should not happen");
+						throw new Exception("A vertex is null, this should not happen");
 					}
 
-					this.Edges.Add(new Edge(nodeVertex, neighborVertex));
+					var newEdge = new Edge(v, nv);
+
+					v.addEdge(newEdge);
+					this.Edges.Add(newEdge);
 				}
 			}
 		}
@@ -81,60 +80,41 @@ namespace csp_api.CSP
 
 			foreach (var value in _orderDomainValues(unassigned, assignments, this))
 			{
-				List<Vertex>? previousVertices = null;
-				List<Edge>? previousEdges = null;
+				Dictionary<string, List<byte>>? previousDomain = null;
+
 				if (_inference != null)
 				{
-					previousVertices = this.Vertices.Select(vertex => new Vertex(vertex.Element, new List<byte>(vertex.Domain))).ToList();
-					previousEdges = this.Edges.Select(edge =>
-					{
-						var vVertex = previousVertices.Find(vertex => vertex.Element == edge.EndVertices.start.Element);
-						var uVertex = previousVertices.Find(vertex => vertex.Element == edge.EndVertices.end.Element);
-
-						if (vVertex is null || uVertex is null)
-						{
-							throw new Exception("A vertex is null, this should not happen");
-						}
-
-						return new Edge(vVertex, uVertex);
-					}).ToList();
-
 					_assign(assignments, unassigned.Element, value);
+					previousDomain = this.Vertices.ToDictionary(key => key.Element, 
+																value => new List<byte>(value.Domain));
+
 					var inferenceSuccess = _inference(unassigned, value, assignments, this);
-					if (!inferenceSuccess)
-					{
-						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
-						continue;
-					}
-					var success = _cspHelper(assignments, ref numBacktracks);
 
-					if (!success)
-					{
-						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
-					}
-					else
-					{
-						return true;
-					}
-				}
-				else
-				{
-					_assign(assignments, unassigned.Element, value);
-					if (_isConsistent(unassigned, value, assignments))
+					if (inferenceSuccess)
 					{
 						var success = _cspHelper(assignments, ref numBacktracks);
-						if (!success)
-						{
-							_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
-						}
-						else
+
+						if (success)
 						{
 							return true;
 						}
 					}
-					else
+
+					_backtrack(assignments, previousDomain, ref unassigned, ref numBacktracks);
+				}
+				else
+				{
+					if (_isConsistent(unassigned, value, assignments))
 					{
-						_backtrack(assignments, unassigned.Element, previousVertices, previousEdges, ref unassigned, ref numBacktracks);
+						_assign(assignments, unassigned.Element, value);
+						var success = _cspHelper(assignments, ref numBacktracks);
+						
+						if (success)
+						{
+							return true;
+						}
+
+						_backtrack(assignments, previousDomain, ref unassigned, ref numBacktracks);
 					}
 				}
 
@@ -145,11 +125,16 @@ namespace csp_api.CSP
 
 		private bool _isConsistent(Vertex unassigned, byte value, Dictionary<string, byte> assignments)
 		{
-			return this.Edges.Where(edge => edge.EndVertices.start == unassigned)
-							.Select(edge => edge.EndVertices.end)
-							.Where(vertex => assignments.ContainsKey(vertex.Element))
-							.Select(neighbor => assignments[neighbor.Element])
-							.All(assignedValues => assignedValues != value);
+			foreach (var edge in unassigned.Edges)
+			{
+				if(assignments.ContainsKey(edge.EndVertices.end.Element) &&
+					assignments[edge.EndVertices.end.Element] == value)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		private void _assign(Dictionary<string, byte> assignments, string element, byte value)
@@ -157,24 +142,18 @@ namespace csp_api.CSP
 			assignments.Add(element, value);
 		}
 
-		private void _backtrack(Dictionary<string, byte> assignments, string element,
-			List<Vertex>? previousVertices, List<Edge>? previousEdges, ref Vertex unassigned, ref int numBacktracks)
+		private void _backtrack(Dictionary<string, byte> assignments,
+			Dictionary<string, List<byte>>? previousDomain, ref Vertex unassigned, ref int numBacktracks)
 		{
 			numBacktracks++;
-			assignments.Remove(element);
+			assignments.Remove(unassigned.Element);
 
-			if (previousVertices != null && previousEdges != null)
+			if (previousDomain != null)
 			{
-				this.Vertices = previousVertices;
-				this.Edges = previousEdges;
-
-				var unElement = unassigned.Element;
-				var newVertex = this.Vertices.Find(vertex => unElement == vertex.Element);
-				if (newVertex is null)
+				foreach (var v in this.Vertices)
 				{
-					throw new Exception("New vertex could not be found, this should not HAPPEN");
+					v.Domain = previousDomain[v.Element];
 				}
-				unassigned = newVertex;
 			}
 		}
 	}

@@ -10,18 +10,6 @@ const MapChart = ({ country, forwardChecking, propagation, mrv, dc, lcv }) => {
   const [elapsedTime, setElapsedTime] = useState(-1.0);
   const [loading, setLoading] = useState(false);
 
-  const env = 'dev';
-
-  let baseURL;
-
-  if (env === 'dev') {
-    baseURL = 'http://localhost:5000/';
-  } else if (env === 'prod') {
-    baseURL = '';
-  } else {
-    baseURL = '';
-  }
-
   useEffect(() => {
     setLoading(true);
     let cancelled = false;
@@ -52,7 +40,7 @@ const MapChart = ({ country, forwardChecking, propagation, mrv, dc, lcv }) => {
     return () => {
       cancelled = true;
     };
-  }, [baseURL, country, forwardChecking, propagation, mrv, dc, lcv]);
+  }, [country, forwardChecking, propagation, mrv, dc, lcv]);
 
   return (
     <>
