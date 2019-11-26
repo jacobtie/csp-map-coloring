@@ -9,8 +9,10 @@ const MapChart = ({ country, forwardChecking, propagation, mrv, dc, lcv }) => {
   const [numBacktracks, setNumBacktracks] = useState(-1);
   const [elapsedTime, setElapsedTime] = useState(-1.0);
   const [loading, setLoading] = useState(false);
+  const [timeout, setTimeout] = useState(false);
 
   useEffect(() => {
+    setTimeout(false);
     setLoading(true);
     let cancelled = false;
     const colors =
@@ -20,20 +22,24 @@ const MapChart = ({ country, forwardChecking, propagation, mrv, dc, lcv }) => {
         ? 'red;green;blue'
         : '';
     (async () => {
-      const res = await getStates(
-        country,
-        colors,
-        forwardChecking,
-        propagation,
-        mrv,
-        dc,
-        lcv
-      );
-      if (!cancelled) {
-        setStates(res.assignments);
-        setNumBacktracks(res.numBacktracks);
-        setElapsedTime(res.elapsedTime / 1000);
-        setLoading(false);
+      try {
+        const res = await getStates(
+          country,
+          colors,
+          forwardChecking,
+          propagation,
+          mrv,
+          dc,
+          lcv
+        );
+        if (!cancelled) {
+          setStates(res.assignments);
+          setNumBacktracks(res.numBacktracks);
+          setElapsedTime(res.elapsedTime / 1000);
+          setLoading(false);
+        }
+      } catch {
+        setTimeout(true);
       }
     })();
 
@@ -66,7 +72,7 @@ const MapChart = ({ country, forwardChecking, propagation, mrv, dc, lcv }) => {
             transform: 'translate(-50%, -50%)',
           }}
         >
-          <BubbleLoader />
+          {!timeout ? <BubbleLoader /> : <h1>Timeout. Please Try Again.</h1>}
         </div>
       )}
     </>

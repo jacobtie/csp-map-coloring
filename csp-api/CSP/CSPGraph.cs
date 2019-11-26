@@ -62,7 +62,7 @@ namespace csp_api.CSP
 			success = _cspHelper(assignments, ref numBacktracks);
 			stopwatch.Stop();
 
-			var elapsedTime = stopwatch.ElapsedTicks / 10000;
+			var elapsedTime = stopwatch.ElapsedMilliseconds;
 
 			var results = new CSPResult(success, assignments, numBacktracks, elapsedTime);
 
@@ -85,7 +85,7 @@ namespace csp_api.CSP
 				if (_inference != null)
 				{
 					_assign(assignments, unassigned.Element, value);
-					previousDomain = this.Vertices.ToDictionary(key => key.Element, 
+					previousDomain = this.Vertices.ToDictionary(key => key.Element,
 																value => new List<byte>(value.Domain));
 
 					var inferenceSuccess = _inference(unassigned, value, assignments, this);
@@ -108,7 +108,7 @@ namespace csp_api.CSP
 					{
 						_assign(assignments, unassigned.Element, value);
 						var success = _cspHelper(assignments, ref numBacktracks);
-						
+
 						if (success)
 						{
 							return true;
@@ -127,7 +127,7 @@ namespace csp_api.CSP
 		{
 			foreach (var edge in unassigned.Edges)
 			{
-				if(assignments.ContainsKey(edge.EndVertices.end.Element) &&
+				if (assignments.ContainsKey(edge.EndVertices.end.Element) &&
 					assignments[edge.EndVertices.end.Element] == value)
 				{
 					return false;
