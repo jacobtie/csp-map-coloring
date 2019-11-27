@@ -131,6 +131,36 @@ namespace csp_api.CSP
 					return minUnassigned;
 				};
 			}
+			// Else if the user only chose Degree Constraint
+			else if (inputModel.DC)
+			{
+				selectUnassignedVariable = (assignments, cspGraph) =>
+				{
+					// Get all unassigned vertices
+					var unassigned = cspGraph.Vertices.Where(vertex => !assignments.ContainsKey(vertex.Element)).ToList();
+
+					// Store the first vertex
+					var maxUnassigned = unassigned[0];
+
+					// Get the edges of the first vertex
+					var maxEdges = maxUnassigned.Edges.Count;
+
+					// For each unassigned vertex
+					foreach (var vertex in unassigned)
+					{
+						// If the current vertex has more edges than the max vertex
+						if (vertex.Edges.Count > maxEdges)
+						{
+							// Update the maxes
+							maxUnassigned = vertex;
+							maxEdges = vertex.Edges.Count;
+						}
+					}
+
+					// Return the max vertex
+					return maxUnassigned;
+				};
+			}
 			// Else the user chose neither
 			else
 			{
