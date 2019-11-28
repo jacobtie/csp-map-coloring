@@ -18,7 +18,7 @@ Kansas,Nebraska,Missouri,Oklahoma,Colorado
 Kentucky,Indiana,Ohio,West Virginia,Virginia,Tennessee,Missouri,Illinois
 Louisiana,Texas,Arkansas,Mississippi
 Massachusetts,Rhode Island,Connecticut,New York,New Hampshire,Vermont
-Maryland,Virginia,West Virginia,Pennsylvania,Delaware
+Maryland,Virginia,West Virginia,Pennsylvania,Delaware,District of Columbia
 Maine,New Hampshire
 Michigan,Wisconsin,Indiana,Ohio
 Minnesota,Wisconsin,Iowa,South Dakota,North Dakota

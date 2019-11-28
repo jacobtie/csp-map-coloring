@@ -53,7 +53,7 @@ namespace csp_api.Services
 
 			try
 			{
-				using (var reader = new StreamReader($"../country-graphs/{country.ToLower()}.txt"))
+				using (var reader = new StreamReader($"country-graphs/{country.ToLower()}.txt"))
 				{
 					while (!reader.EndOfStream)
 					{
